@@ -1,0 +1,19 @@
+# Fill in appropriate data for application
+# When completed, rename this file to config.yml
+host: 
+port: 
+username: 
+password: 
+timeout: 
+tds_version: 
+schedule: 
+twilio_auth_token: 
+twilio_acct_sid: 
+twilio_acct_number: 
+sms_number: 
+email_user: 
+email_pass: 
+
+# Accepts array of emails
+# ['email@example.com', 'email2@example.com']
+email_list: 
