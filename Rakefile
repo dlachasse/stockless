@@ -61,6 +61,15 @@ namespace :schedule do
 
 end
 
+namespace :run do
+	
+	desc "Run manual check of Visr.net"
+	task :check do
+		Check.new
+	end
+
+end
+
 namespace :db do
 
 	desc "Drop table"
