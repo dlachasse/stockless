@@ -1,7 +1,6 @@
 require 'gmail'
 require 'yaml'
 require 'maruku'
-require 'erb'
 
 require_relative './db'
 require_relative './check'
@@ -37,7 +36,7 @@ class MiddleMan
 		# from Twilio once account is activated
 		#
 		# Message.new("New #{sku} in stock!")
-		
+
 		html = build_html sku, table
 
 		CNF['email_list'].each do |address|
