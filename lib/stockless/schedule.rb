@@ -8,7 +8,7 @@ EM.run {
 
   scheduler = Rufus::Scheduler::EmScheduler.start_new
 
-	# Default email checker
+	# Full scheduled report
 	scheduler.every "#{CNF['schedule']}" do
 		MiddleMan.new(:send)
 	end
@@ -18,6 +18,7 @@ EM.run {
 	  Check.new
 	end
 
+	# Check for emails
 	scheduler.every "5m" do
 		MiddleMan.new(:receive)
 	end
