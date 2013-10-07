@@ -41,8 +41,10 @@ class Check
 						close_result result
 					end
 				else
-					puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = 0 WHERE upc = '#{upc}'"
-					result = db.prepare("UPDATE items SET quantity = 0 WHERE upc = '#{upc}'").execute
+					unless current_inventory == 0
+						puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = 0 WHERE upc = '#{upc}'"
+						result = db.prepare("UPDATE items SET quantity = 0 WHERE upc = '#{upc}'").execute
+					end
 				end
 
 				close_result result
