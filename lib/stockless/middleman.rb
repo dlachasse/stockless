@@ -28,26 +28,17 @@ class MiddleMan
 	end
 
 	def send sku
+		puts "\033[35mMESSAGE\033[0m :: Preparing message"
 		data = DB.new(:build_response)
 		table = data.instance_variable_get('@resp_body')
 		sku = sku.join(", ") if sku.is_a? Array
-		Message.new("New #{sku} in stock!")
-		html = "<h3>Visr Stock Report</h3>
-			<p>
-				Quantities were pulled from visr.net on #{Time.now.strftime("%A, %B %d at %I:%M%P")}. New <b>#{sku}</b> stock was added!
-			</p>
-		 <table cellspacing=\"0\" cellpadding=\"10\" border=\"0\">
-			<thead>
-				<tr style=\"border-bottom: thin solid\">
-					<th>UPC</th>
-					<th>SKU</th>
-					<th>Quantity</th>
-				</tr>
-			</th>
-			<tbody>
-				#{table}
-		  </tbody>
-		</table>"
+
+		# This will build a new text message sent
+		# from Twilio once account is activated
+		#
+		# Message.new("New #{sku} in stock!")
+		
+		html = build_html sku, table
 
 		CNF['email_list'].each do |address|
 			@gmail.deliver do |email|
@@ -61,12 +52,12 @@ class MiddleMan
 
 		end
 
-		puts "Email delivered!"
+		puts "\033[35mMESSAGE\033[0m :: Message delivered"
 	end
 
 	def receive
 		if @gmail.inbox.count(:unread) > 0
-			puts "Receiving emails"
+			puts "\033[35mMESSAGE\033[0m :: Receiving message(s)"
 			@gmail.inbox.emails(:unread).each do |email|
 				sender = email.envelope.from.first["mailbox"] + "@" + email.envelope.from.first["host"]
 				message = email.body
@@ -88,7 +79,7 @@ class MiddleMan
 				end
 			end
 		else
-			puts "No new emails!"
+			puts "\033[35mMESSAGE\033[0m :: No new emails"
 		end
 	end
 
@@ -140,6 +131,25 @@ class MiddleMan
 		end
 		FileUtils.mv(output_file, input_file)
 		Rake::Task['schedule:restart'].invoke
+	end
+
+	def build_html sku, table
+		html = "<h3>Visr Stock Report</h3>
+			<p>
+				Quantities were pulled from visr.net on #{Time.now.strftime("%A, %B %d at %I:%M%P")}. New <b>#{sku}</b> stock was added!
+			</p>
+		 <table cellspacing=\"0\" cellpadding=\"10\" border=\"0\">
+			<thead>
+				<tr style=\"border-bottom: thin solid\">
+					<th>UPC</th>
+					<th>SKU</th>
+					<th>Quantity</th>
+				</tr>
+			</th>
+			<tbody>
+				#{table}
+		  </tbody>
+		</table>"
 	end
 
 end
