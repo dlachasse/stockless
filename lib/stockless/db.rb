@@ -24,10 +24,10 @@ class DB
 				# Strip trailing empty space
 				upc.rstrip!
 				if upc.chomp!("d").nil?
-					puts "SQL :: REPLACE INTO items VALUES ( '#{upc}', NULL, NULL )"
+					puts "\033[32mSQL\033[0m :: REPLACE INTO items VALUES ( '#{upc}', NULL, NULL )"
 					result = db.prepare("REPLACE INTO items VALUES ( #{upc.to_i}, NULL, NULL )").execute
 				else
-					puts "SQL :: DELETE FROM items WHERE upc LIKE '%#{upc.to_i}'"
+					puts "\033[32mSQL\033[0m :: DELETE FROM items WHERE upc LIKE '%#{upc.to_i}'"
 					result = db.prepare("DELETE FROM items WHERE upc LIKE '%#{upc.to_i}'").execute
 				end
 
@@ -78,7 +78,7 @@ class DB
 				result = @client.execute("SELECT LocalSKU FROM [SE Data].[dbo].[InventorySuppliers] WHERE SupplierSKU LIKE '%#{row[0]}'")
 				sku = result.each(:first => true)
 				sku = sku[0]["LocalSKU"].gsub!("VisrM_", "")
-				puts "SQL :: UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'"
+				puts "\033[32mSQL\033[0m :: UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'"
 				sqlite = db.prepare("UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'").execute
 				sqlite.close
 
