@@ -22,4 +22,8 @@ To add a new email address – just as with the time interval change you must em
 
 ### Instructions
 
-To be resent instructions email `send instructions`. They will be sent to whatever address sends this.
+To be sent instructions email `send instructions`. They will be resent to whatever address it receives this text from.
+
+### Technical notes
+
+When installing this on a new computer be sure to create a product database in the base directory of the project with the file name `product.db`. It runs on SQLite. A good visual tool to manage and view/query the database is with [Mike T's SQLite Database Maintenance Application](http://saxmike.com/MySoftware/MySoftware.asp?Menu=MYSOFTWARE).
