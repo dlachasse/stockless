@@ -62,7 +62,7 @@ namespace :schedule do
 end
 
 namespace :run do
-	
+
 	desc "Run manual check of Visr.net"
 	task :check do
 		Check.new
@@ -79,7 +79,7 @@ namespace :db do
 
 	desc "Close and unlock database"
 	task :unlock do
-		sql = SQLite3::Database.new "C:/Users/dlachasse/ruby_projects/stockless/product.db"
+		sql = SQLite3::Database.new File.expand_path('../../product.db')
 		sql.close
 		puts "DB closed? #{sql.closed?}"
 	end

@@ -5,7 +5,6 @@ require_relative './middleman'
 class Check
 
 	def initialize
-		@change = false
 		@added_sku = Array.new
 		@b = Watir::Browser.new :firefox
 		@b.driver.manage.timeouts.implicit_wait = 5
@@ -14,7 +13,7 @@ class Check
 		@b.text_field(:name => "Loginform1:Password").set 'f5zd58vzxf5'
 		@b.button(:name => "Loginform1:Login_Command").click
 
-		SQLite3::Database.new "C:/Users/dlachasse/ruby_projects/stockless/product.db" do |db|
+		SQLite3::Database.new File.expand_path('../../product.db') do |db|
 			db.execute "SELECT * FROM items" do |row|
 
 				sup_sku = "0" * 8
@@ -32,32 +31,31 @@ class Check
 						if trow.text.include? sup_sku
 							quantity = trow[6].text.to_i
 							if current_inventory != quantity
-								puts "SQL :: UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'"
+								puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'"
 								result = db.prepare("UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'").execute
 								if current_inventory < quantity
-									@change = true
 									@added_sku << row[1]
 								end
 							end
 						end
-						result.close if result
+						close_result result
 					end
 				else
-					if current_inventory != 0
-						puts "SQL :: UPDATE items SET quantity = 0 WHERE upc = '#{upc}'"
-						result = db.prepare("UPDATE items SET quantity = 0 WHERE upc = '#{upc}'").execute
-					end
+					puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = 0 WHERE upc = '#{upc}'"
+					result = db.prepare("UPDATE items SET quantity = 0 WHERE upc = '#{upc}'").execute
 				end
 
-				result.close if result
+				close_result result
 			end
 
 			@b.close
 		end
 
-		if @change == true
-			MiddleMan.new(:send, :sku => @added_sku)
-		end
+		MiddleMan.new(:send, :sku => @added_sku) unless @added_sku.empty?
+	end
+
+	def close_result res
+		res.close if res
 	end
 
 end
