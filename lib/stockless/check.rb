@@ -5,6 +5,7 @@ require_relative './middleman'
 class Check
 
 	def initialize
+		@db_file = File.join(File.dirname(File.expand_path("./stockless/")), 'product.db')
 		@added_sku = Array.new
 		@b = Watir::Browser.new :firefox
 		@b.driver.manage.timeouts.implicit_wait = 5
@@ -13,7 +14,7 @@ class Check
 		@b.text_field(:name => "Loginform1:Password").set 'f5zd58vzxf5'
 		@b.button(:name => "Loginform1:Login_Command").click
 
-		SQLite3::Database.new File.expand_path('../../product.db') do |db|
+		SQLite3::Database.new @db_file do |db|
 			db.execute "SELECT * FROM items" do |row|
 
 				sup_sku = "0" * 8

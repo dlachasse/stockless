@@ -6,7 +6,7 @@ require_relative './local_database'
 class DB
 
 	def initialize(action, opts={})
-		DB_FILE = File.expand_path('../../product.db')
+		@db_file = File.join(File.dirname(File.expand_path("./stockless/")), 'product.db')
 		case action
 		when :insert
 			insert opts[:upc]
@@ -19,7 +19,7 @@ class DB
 	end
 
 	def insert list
-		SQLite3::Database.new DB_FILE do |db|
+		SQLite3::Database.new @db_file do |db|
 			list.each do |upc|
 
 				# Strip trailing empty space
@@ -41,7 +41,7 @@ class DB
 	end
 
 	def build_response
-		SQLite3::Database.new DB_FILE do |db|
+		SQLite3::Database.new @db_file do |db|
 			@resp_body = ""
 			db.execute "SELECT * FROM items" do |row|
 				@resp_body += "<tr><td width=\"80\">#{row[0]}</td><td width=\"200\">#{row[1]}</td><td>#{row[2] || 0}</td></tr>"
@@ -59,7 +59,7 @@ class DB
 	end
 
 	def run_sql(sql, batch = false)
-		SQLite3::Database.new DB_FILE do |db|
+		SQLite3::Database.new @db_file do |db|
 			if batch
 				db.execute_batch sql
 			else
@@ -73,7 +73,7 @@ class DB
 
 	def find_skus
 		@client = LocalDatabase.open
-		SQLite3::Database.new DB_FILE do |db|
+		SQLite3::Database.new @db_file do |db|
 			db.execute "SELECT * FROM items WHERE sku IS NULL" do |row|
 
 				result = @client.execute("SELECT LocalSKU FROM [SE Data].[dbo].[InventorySuppliers] WHERE SupplierSKU LIKE '%#{row[0]}'")
