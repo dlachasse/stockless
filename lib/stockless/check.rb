@@ -34,7 +34,7 @@ class Check
 							if current_inventory != quantity
 								puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'"
 								result = db.prepare("UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'").execute
-								if current_inventory < quantity
+								if current_inventory + 5 < quantity
 									@added_sku << row[1]
 								end
 							end
