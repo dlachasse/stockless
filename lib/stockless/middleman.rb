@@ -12,11 +12,7 @@ class MiddleMan
 		@gmail = Gmail.new(CNF['email_user'], CNF['email_pass'])
 		case action
 		when :send
-			if opts[:sku]
-				send opts[:sku]
-			else
-				puts "No new email!"
-			end
+			send opts[:sku] if opts[:sku]
 		when :receive
 			receive
 		when :instructions

@@ -5,14 +5,22 @@ require_relative './middleman'
 class Check
 
 	def initialize
+		puts "\033[33mCHECK\033[0m :: Running"
 		@db_file = File.join(File.dirname(File.expand_path("./stockless/")), 'product.db')
 		@added_sku = Array.new
-		@b = Watir::Browser.new :firefox
+		
+		client = Selenium::WebDriver::Remote::Http::Default.new
+		client.timeout = 180 # seconds – default is 60
+		@b = Watir::Browser.new :firefox, :http_client => client
+
 		@b.driver.manage.timeouts.implicit_wait = 5
 		@b.goto("https://www.visr.net/msib21vb")
 		@b.text_field(:name => "Loginform1:UserName").set 'visr8979'
 		@b.text_field(:name => "Loginform1:Password").set 'f5zd58vzxf5'
 		@b.button(:name => "Loginform1:Login_Command").click
+		if @b.url.match /(aspxerror|NotAvailable)/
+			@b.goto("https://www.visr.net/msib21vb")
+		end
 
 		SQLite3::Database.new @db_file do |db|
 			db.execute "SELECT * FROM items" do |row|
@@ -55,6 +63,11 @@ class Check
 		end
 
 		MiddleMan.new(:send, :sku => @added_sku) unless @added_sku.empty?
+
+	rescue Watir::Exception::UnknownObjectException, Net::ReadTimeout
+		@b.close
+		puts "\033[31mERROR\033[0m :: Error on webpage"
+
 	end
 
 	def close_result res

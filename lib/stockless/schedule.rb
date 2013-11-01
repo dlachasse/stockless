@@ -1,12 +1,11 @@
 require 'rufus-scheduler'
-require 'yaml'
 require 'eventmachine'
 
 require_relative './middleman'
 
 EM.run {
 
-  scheduler = Rufus::Scheduler::EmScheduler.start_new
+  scheduler = Rufus::Scheduler.new
 
 	# Full scheduled report
 	scheduler.every "#{CNF['schedule']}" do

@@ -6,7 +6,7 @@ gemspec
 gem 'watir-webdriver'
 gem 'sqlite3'
 gem 'gmail'
-gem 'tiny_tds'
+gem 'tiny_tds', '0.6.2'
 gem 'rufus-scheduler'
 gem 'eventmachine'
 gem 'sys-proctable'
