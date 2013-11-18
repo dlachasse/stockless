@@ -84,4 +84,9 @@ namespace :db do
 		puts "DB closed? #{sql.closed?}"
 	end
 
+	desc "Insert empty skus"
+	task :find_skus do
+		DB.new(:insert_skus)
+	end
+
 end
