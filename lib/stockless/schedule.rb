@@ -13,12 +13,12 @@ EM.run {
 	end
 
 	# Visr check
-	scheduler.every "15m" do
+	scheduler.every "20m" do
 	  Check.new
 	end
 
 	# Check for emails
-	scheduler.every "5m" do
+	scheduler.every "10m" do
 		MiddleMan.new(:receive)
 	end
 
