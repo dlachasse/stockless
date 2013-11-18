@@ -14,6 +14,8 @@ class DB
 			build_response
 		when :drop
 			drop_table
+		when :insert_skus
+			find_skus
 		end
 
 	end
@@ -43,7 +45,7 @@ class DB
 	def build_response
 		SQLite3::Database.new @db_file do |db|
 			@resp_body = ""
-			db.execute "SELECT * FROM items" do |row|
+			db.execute "SELECT * FROM items ORDER BY sku" do |row|
 				@resp_body += "<tr><td width=\"80\">#{row[0]}</td><td width=\"200\">#{row[1]}</td><td>#{row[2] || 0}</td></tr>"
 			end
 
@@ -78,9 +80,15 @@ class DB
 
 				result = @client.execute("SELECT LocalSKU FROM [SE Data].[dbo].[InventorySuppliers] WHERE SupplierSKU LIKE '%#{row[0]}'")
 				sku = result.each(:first => true)
-				sku = sku[0]["LocalSKU"].gsub!("VisrM_", "")
-				puts "\033[32mSQL\033[0m :: UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'"
-				sqlite = db.prepare("UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'").execute
+				if result.affected_rows > 0
+					sku = sku[0]["LocalSKU"].gsub!("VisrM_", "")
+					puts "\033[32mSQL\033[0m :: UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'"
+					sqlite = db.prepare("UPDATE items SET sku = '#{sku}' WHERE upc = '#{row[0]}'").execute
+				else
+					puts "\033[35mMESSAGE\033[0m :: SKU #{row[0]} does not exist!"
+					puts "\033[32mSQL\033[0m :: DELETE FROM items WHERE upc = '#{row[0]}'"
+					sqlite = db.prepare("DELETE FROM items WHERE upc = '#{row[0]}'").execute
+				end
 				sqlite.close
 
 			end
