@@ -34,7 +34,7 @@ class Check
 				upc = sup_sku.to_i
 				if @b.table(:id => "dlistProducts").td(index: 0).a(index: 0).exists?
 					@b.table(:id => "dlistProducts").td(index: 0).a(index: 0).click
-					@b.driver.manage.timeouts.implicit_wait = 5
+					@b.driver.manage.timeouts.implicit_wait = 3
 					@b.table(:id => "dlColorList").links.each { |color| color.click }
 					@b.trs(:class, "dataTableRowBg").each do |trow|
 						if trow.text.include? sup_sku
@@ -50,10 +50,9 @@ class Check
 						close_result result
 					end
 				else
-					unless current_inventory == 0
-						puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = 0 WHERE upc = '#{upc}'"
-						result = db.prepare("UPDATE items SET quantity = 0 WHERE upc = '#{upc}'").execute
-					end
+					puts "\033[31mWARN\033[0m :: Item now nonexistent, remove from list"
+					puts "\033[32mSQL\033[0m :: DELETE FROM items WHERE upc = '#{upc}'"
+					result = db.prepare("DELETE FROM items WHERE upc = '#{upc}'").execute
 				end
 
 				close_result result
