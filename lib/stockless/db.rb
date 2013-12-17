@@ -37,7 +37,7 @@ class DB
 				result.close
 			end
 
-		end
+		end.close
 		find_skus
 
 	end
@@ -49,8 +49,7 @@ class DB
 				@resp_body += "<tr><td width=\"80\">#{row[0]}</td><td width=\"200\">#{row[1]}</td><td>#{row[2] || 0}</td></tr>"
 			end
 
-			db.close
-		end
+		end.close
 
 		return @resp_body
 	end
@@ -68,8 +67,7 @@ class DB
 				db.execute sql
 			end
 
-			db.close
-		end
+		end.close
 
 	end
 
@@ -96,6 +94,6 @@ class DB
 		end
 
 		LocalDatabase.close @client
-	end
+	end.close
 	
 end
