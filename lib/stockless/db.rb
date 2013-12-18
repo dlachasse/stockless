@@ -16,6 +16,8 @@ class DB
 			drop_table
 		when :insert_skus
 			find_skus
+		when :backorders
+			load_in_backorders
 		end
 
 	end
@@ -98,6 +100,33 @@ class DB
 
 		LocalDatabase.close @client
 		db.close
+	end
+
+	def load_in_backorders
+		@client = LocalDatabase.open
+
+		result = @client.execute("
+			SELECT DISTINCT(od.SKU), iv.SupplierSKU FROM [SE Data].[dbo].[Order Details] AS od
+				INNER JOIN [SE Data].[dbo].[InventorySuppliers] AS iv
+					ON od.SKU = iv.LocalSKU
+					WHERE od.Backordered <> 0
+						AND od.Status = 'Item Backordered'
+						AND iv.SupplierID = 7
+						AND iv.SupplierSKU IS NOT NULL
+						AND iv.SupplierSKU LIKE '00%'")
+		result.each do |sku|
+			force_insert sku["SKU"], sku["SupplierSKU"]
+		end
+
+		LocalDatabase.close @client
+	end
+
+	def force_insert sku, upc
+		db = SQLite3::Database.open @db_file
+		puts "\033[32mSQL\033[0m :: REPLACE INTO items VALUES ( '#{upc}', '#{sku}', NULL )"
+		db.execute "REPLACE INTO items VALUES ( '#{upc}', '#{sku}', NULL )"
+
+		db.close if db
 	end
 	
 end
