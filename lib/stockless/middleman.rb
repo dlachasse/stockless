@@ -1,6 +1,7 @@
 require 'gmail'
 require 'yaml'
 require 'maruku'
+require 'nokogiri'
 
 require_relative './db'
 require_relative './check'
@@ -55,19 +56,21 @@ class MiddleMan
 			puts "\033[35mMESSAGE\033[0m :: Receiving message(s)"
 			@gmail.inbox.emails(:unread).each do |email|
 				sender = email.envelope.from.first["mailbox"] + "@" + email.envelope.from.first["host"]
-				message = email.body
+				message = email.body.to_s
 
-				# ignores anything after the first line
-				message = message.to_s.split("\n").first
-				case message
+				html_body = extract_html(message)
+				text = extract_text(html_body)
+				puts "\033[35mMESSAGE\033[0m :: #{text}"
+
+				case text
 				when /^\d+/
-					build message
+					build text
 				when /^send instructions/
 					send_instructions sender
 				when /^schedule:/
-					update_schedule message
+					update_schedule text
 				when /user/
-					address = message.match(/\S+@\S+\.(com|net|org)/i)[0]
+					address = text.match(/\S+@\S+\.(com|net|org)/i)[0]
 					config_adjust :email, address
 				else
 					puts "Nothing to do!"
@@ -76,6 +79,17 @@ class MiddleMan
 		else
 			puts "\033[35mMESSAGE\033[0m :: No new emails"
 		end
+	end
+
+	def extract_html body
+		beginning = body.index("<div")
+		eoh = body.index("</div>") + 6
+		body[beginning..eoh]
+	end
+
+	def extract_text html
+		body = Nokogiri::HTML(html)
+		body.css("div").text.strip
 	end
 
 	def build email
