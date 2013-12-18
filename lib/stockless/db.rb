@@ -94,12 +94,12 @@ class DB
 				end
 				sqlite.close
 
+				db.close
 			end
 
 		end
 
 		LocalDatabase.close @client
-		db.close
 	end
 
 	def load_in_backorders
@@ -115,7 +115,8 @@ class DB
 						AND iv.SupplierSKU IS NOT NULL
 						AND iv.SupplierSKU LIKE '00%'")
 		result.each do |sku|
-			force_insert sku["SKU"], sku["SupplierSKU"]
+			sku["SKU"].gsub!("VisrM_", "")
+			force_insert sku["SKU"], sku["SupplierSKU"].to_i
 		end
 
 		LocalDatabase.close @client
