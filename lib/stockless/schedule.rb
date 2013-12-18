@@ -8,8 +8,8 @@ EM.run {
   scheduler = Rufus::Scheduler.new
 
 	# Full scheduled report
-	scheduler.every "#{CNF['schedule']}" do
-		MiddleMan.new(:send)
+	scheduler.every "24h" do
+		DB.new(:backorders)
 	end
 
 	# Visr check
