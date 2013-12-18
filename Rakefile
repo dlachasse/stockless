@@ -89,4 +89,9 @@ namespace :db do
 		DB.new(:insert_skus)
 	end
 
+	desc "Load in backorders"
+	task :backorders do
+		DB.new(:backorders)
+	end
+
 end
