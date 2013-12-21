@@ -25,9 +25,7 @@ class Check
 		SQLite3::Database.new @db_file do |db|
 			db.execute "SELECT * FROM items" do |row|
 
-				sup_sku = "0" * 8
-				sup_sku += row[0]
-				sup_sku = sup_sku[sup_sku.length - 14..-1]
+        sup_sku = build_sku(row[0])
 				current_inventory = row[2].to_i
 				@b.text_field(:id => "pageHeader_SLDSearchControl1_searchInput").set sup_sku
 				@b.button(:id => "pageHeader_SLDSearchControl1_searchSubmit").click
@@ -68,6 +66,12 @@ class Check
 		puts "\033[31mERROR\033[0m :: Error on webpage"
 
 	end
+
+  def build_sku sku
+    sup_sku = "0" * 8
+    sup_sku += sku
+    sup_sku = sup_sku[sup_sku.length - 14..-1]
+  end
 
 	def close_result res
 		res.close if res
