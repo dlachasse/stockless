@@ -9,9 +9,7 @@ class Check
 		@db_file = File.join(File.dirname(File.expand_path("./stockless/")), 'product.db')
 		@added_sku = Array.new
 		
-		client = Selenium::WebDriver::Remote::Http::Default.new
-		client.timeout = 180 # seconds – default is 60
-		@b = Watir::Browser.new :firefox, :http_client => client
+    create_client
 
 		@b.driver.manage.timeouts.implicit_wait = 5
 		@b.goto("https://www.visr.net/msib21vb")
@@ -71,6 +69,12 @@ class Check
     sup_sku = "0" * 8
     sup_sku += sku
     sup_sku = sup_sku[sup_sku.length - 14..-1]
+  end
+
+  def create_client
+		client = Selenium::WebDriver::Remote::Http::Default.new
+		client.timeout = 180 # seconds – default is 60
+		@b = Watir::Browser.new :firefox, :http_client => client
   end
 
 	def close_result res
