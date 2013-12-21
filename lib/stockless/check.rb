@@ -31,9 +31,7 @@ class Check
 							if current_inventory != quantity
 								puts "\033[32mSQL\033[0m :: UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'"
 								result = db.prepare("UPDATE items SET quantity = #{quantity} WHERE upc = '#{upc}'").execute
-								if current_inventory + 5 < quantity
-									@added_sku << row[1]
-								end
+                add_to_new_inventory
 							end
 						end
 						close_result result
@@ -84,6 +82,10 @@ class Check
 		@b.text_field(:name => "Loginform1:UserName").set CNF['site_user']
 		@b.text_field(:name => "Loginform1:Password").set CNF['site_pass']
 		@b.button(:name => "Loginform1:Login_Command").click
+  end
+
+  def add_to_new_inventory
+    @added_sku << row[1] if current_inventory + 5 < quantity
   end
 
 end
