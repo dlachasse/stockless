@@ -1,0 +1,10 @@
+host:
+port:
+username:
+password:
+timeout:
+tds_version:
+twilio_acct_sid:
+twilio_auth_token:
+email_user:
+email_pass:
