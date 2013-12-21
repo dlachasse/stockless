@@ -10,15 +10,8 @@ class Check
 		@added_sku = Array.new
 		
     create_client
-
-		@b.driver.manage.timeouts.implicit_wait = 5
-		@b.goto("https://www.visr.net/msib21vb")
-		@b.text_field(:name => "Loginform1:UserName").set CNF['site_user']
-		@b.text_field(:name => "Loginform1:Password").set CNF['site_pass']
-		@b.button(:name => "Loginform1:Login_Command").click
-		if @b.url.match /(aspxerror|NotAvailable)/
-			@b.goto("https://www.visr.net/msib21vb")
-		end
+    login
+    handle_404
 
 		SQLite3::Database.new @db_file do |db|
 			db.execute "SELECT * FROM items" do |row|
@@ -80,5 +73,17 @@ class Check
 	def close_result res
 		res.close if res
 	end
+
+  def handle_404
+    @b.goto("https://www.visr.net/msib21vb") if @b.url.match /(aspxerror|NotAvailable)/
+  end
+
+  def login
+		@b.driver.manage.timeouts.implicit_wait = 5
+		@b.goto("https://www.visr.net/msib21vb")
+		@b.text_field(:name => "Loginform1:UserName").set CNF['site_user']
+		@b.text_field(:name => "Loginform1:Password").set CNF['site_pass']
+		@b.button(:name => "Loginform1:Login_Command").click
+  end
 
 end
