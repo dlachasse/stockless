@@ -15,8 +15,8 @@ class Check
 
 		@b.driver.manage.timeouts.implicit_wait = 5
 		@b.goto("https://www.visr.net/msib21vb")
-		@b.text_field(:name => "Loginform1:UserName").set 'visr8979'
-		@b.text_field(:name => "Loginform1:Password").set 'f5zd58vzxf5'
+		@b.text_field(:name => "Loginform1:UserName").set CNF['site_user']
+		@b.text_field(:name => "Loginform1:Password").set CNF['site_pass']
 		@b.button(:name => "Loginform1:Login_Command").click
 		if @b.url.match /(aspxerror|NotAvailable)/
 			@b.goto("https://www.visr.net/msib21vb")
